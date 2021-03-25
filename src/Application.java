@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 
 /**
  * Main class for the Translator project, containing the GUI
@@ -9,14 +11,10 @@ public class Application {
 
 
 
-//    public static void main(String[] args) {
-//        Application app = new Application();
-//        javax.swing.SwingUtilities.invokeLater(new Runnable(){
-//            public void run(){
-//                app.runApplication();
-//            }
-//        });
-//    }
+    public static void main(String[] args) {
+        Application app = new Application();
+        javax.swing.SwingUtilities.invokeLater(app::runApplication);
+    }
 
     public Application(){
 
@@ -45,15 +43,20 @@ public class Application {
         JMenuItem d1 = new JMenuItem("New dictionary");
         JMenuItem d2 = new JMenuItem("Save dictionary");
         JMenuItem d3 = new JMenuItem("Load dictionary");
-        JMenuItem d4 = new JMenuItem("Edit dictionary");
+        JMenuItem d4 = new JMenuItem("View/Edit dictionary");
         dictMenu.add(d1);
         dictMenu.add(d2);
         dictMenu.add(d3);
         dictMenu.add(d4);
 
+        JLabel status = new JLabel("Load a dictionary to start using the program...");
+
         menuBar.add(mainMenu);
         menuBar.add(dictMenu);
         window.setJMenuBar(menuBar);
+
+        window.add(status, BorderLayout.PAGE_START);
+
         window.setVisible(true);
 
     }

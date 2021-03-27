@@ -1,5 +1,10 @@
 import java.io.Serializable;
 
+/**
+ * Class to represent a Dictionary in the Translator program
+ * @version 1.0
+ * @author Team 2 AC12001
+ */
 public class Dictionary implements Serializable {
 
     private String name;
@@ -120,30 +125,50 @@ public class Dictionary implements Serializable {
 
     }
 
+    /**
+     * Returns the name of the Dictionary
+     * @return The name of the Dictionary
+     */
     public String getName() {
 
         return name;
 
     }
 
-    public void setName(String word) {
+    /**
+     * Sets the name of the Dictionary
+     * @param pName The name for the Dictionary
+     */
+    public void setName(String pName) {
 
-        name = word;
+        name = pName;
 
     }
 
+    /**
+     * Returns the size of the Dictionary
+     * @return The size of the Dictionary
+     */
     public int getSize() {
 
         return size;
 
     }
 
+    /**
+     * Returns the first language of the Dictionary
+     * @return The first language of the Dictionary
+     */
     public String getLanguageA() {
 
         return languageA;
 
     }
 
+    /**
+     * Returns the second language of the Dictionary
+     * @return The second language of the Dictionary
+     */
     public String getLanguageB() {
 
         return languageB;

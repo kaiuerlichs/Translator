@@ -12,7 +12,7 @@ public class Translator {
     private Dictionary dict;
     private int dir;
 
-    public String translate(String input){
+    public String translate(String input, int dir){
         Pattern p = Pattern.compile("[^\\w\\s]");
         Matcher m = p.matcher(input);
 
@@ -38,7 +38,7 @@ public class Translator {
                 String copy = current;
                 for(int i = copy.split(" ").length; i > 0; i--){
                     try {
-                        output = output + dict.find(copy,0);
+                        output = output + dict.find(copy,dir);
                         current = current.replace(copy, "").trim();
                         break;
                     } catch (NoTranslationFoundException e) {
@@ -66,12 +66,12 @@ public class Translator {
         return output.trim();
     }
 
-    public String translate(File input) throws InvalidFileFormatException {
+    public String translate(File input, int dir) throws InvalidFileFormatException {
         String ext = input.getName().substring(input.getName().lastIndexOf("."));
         if(ext.equals(".txt")){
             try {
                 String text = Files.readString(Path.of(input.getAbsolutePath()));
-                return translate(text);
+                return translate(text, dir);
             } catch (IOException e) {
                 throw new InvalidFileFormatException();
             }
@@ -81,7 +81,7 @@ public class Translator {
         }
     }
 
-    public String translateAskUser(String input){
+    public String translateAskUser(String input, int dir){
         Pattern p = Pattern.compile("[^\\w\\s]");
         Matcher m = p.matcher(input);
 
@@ -107,7 +107,7 @@ public class Translator {
                 String copy = current;
                 for(int i = copy.split(" ").length; i > 0; i--){
                     try {
-                        output = output + dict.find(copy,0);
+                        output = output + dict.find(copy,dir);
                         current = current.replace(copy, "").trim();
                         break;
                     } catch (NoTranslationFoundException e) {
@@ -134,6 +134,21 @@ public class Translator {
         }
 
         return output.trim();
+    }
+
+    public String translateAskUser(File input, int dir) throws InvalidFileFormatException {
+        String ext = input.getName().substring(input.getName().lastIndexOf("."));
+        if(ext.equals(".txt")){
+            try {
+                String text = Files.readString(Path.of(input.getAbsolutePath()));
+                return translateAskUser(text, dir);
+            } catch (IOException e) {
+                throw new InvalidFileFormatException();
+            }
+        }
+        else{
+            throw new InvalidFileFormatException();
+        }
     }
 
     public Dictionary getDict(){

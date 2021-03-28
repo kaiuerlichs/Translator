@@ -1,3 +1,4 @@
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -7,12 +8,16 @@ import java.io.Serializable;
  */
 public class Dictionary implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1646427678450944460L;
+    
     private String name;
     private int size;
     private String languageA;
     private String languageB;
     private BinaryTree<DictionaryItem> treeAToB;
     private BinaryTree<DictionaryItem> treeBToA;
+
 
     /**
      * Default constructor for an instance of the Dictionary class

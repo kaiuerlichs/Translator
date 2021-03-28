@@ -1,5 +1,9 @@
+import java.io.File;
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Class to represent a Dictionary in the Translator program
@@ -10,7 +14,7 @@ public class Dictionary implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1646427678450944460L;
-    
+
     private String name;
     private int size;
     private String languageA;
@@ -35,6 +39,30 @@ public class Dictionary implements Serializable {
 
         treeAToB = new BinaryTree<DictionaryItem>();
         treeBToA = new BinaryTree<DictionaryItem>();
+
+    }
+
+    public Dictionary(File input, String pName, String pLanguageA, String pLanguageB) throws InvalidFileFormatException {
+        this(pName, pLanguageA, pLanguageB);
+
+        String ext = input.getName().substring(input.getName().lastIndexOf("."));
+        if(ext.equals(".txt")){
+            try {
+                String txt = Files.readString(Path.of(input.getAbsolutePath()));
+                String[] lines = txt.split("\n");
+
+                for (String line : lines) {
+                    String[] words = line.split(";");
+                    add(words[0],words[1]);
+                }
+
+            } catch (IOException e) {
+                throw new InvalidFileFormatException();
+            }
+        }
+        else{
+            throw new InvalidFileFormatException();
+        }
 
     }
 

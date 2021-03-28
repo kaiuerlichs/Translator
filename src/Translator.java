@@ -13,7 +13,7 @@ public class Translator {
     private int dir;
 
     public String translate(String input, int dir){
-        Pattern p = Pattern.compile("[^\\w\\s]");
+        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\')]");
         Matcher m = p.matcher(input);
 
         String output = "";
@@ -39,7 +39,7 @@ public class Translator {
                 for(int i = copy.split(" ").length; i > 0; i--){
                     try {
                         output = output + dict.find(copy,dir);
-                        current = current.replace(copy, "").trim();
+                        current = current.replaceFirst(copy, "").trim();
                         break;
                     } catch (NoTranslationFoundException e) {
                         int end = copy.lastIndexOf(" ");
@@ -48,7 +48,7 @@ public class Translator {
                         }
                         else{
                             output = output + copy;
-                            current = current.replace(copy, "").trim();
+                            current = current.replaceFirst(copy, "").trim();
                         }
                     } catch (InvalidTranslationDirectionException e) {
                         e.printStackTrace();
@@ -82,7 +82,7 @@ public class Translator {
     }
 
     public String translateAskUser(String input, int dir){
-        Pattern p = Pattern.compile("[^\\w\\s]");
+        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\')]");
         Matcher m = p.matcher(input);
 
         String output = "";
@@ -108,7 +108,7 @@ public class Translator {
                 for(int i = copy.split(" ").length; i > 0; i--){
                     try {
                         output = output + dict.find(copy,dir);
-                        current = current.replace(copy, "").trim();
+                        current = current.replaceFirst(copy, "").trim();
                         break;
                     } catch (NoTranslationFoundException e) {
                         int end = copy.lastIndexOf(" ");
@@ -118,7 +118,7 @@ public class Translator {
                         else{
                             String translation = getUserTranslation(copy);
                             output = output + translation;
-                            current = current.replace(copy, "").trim();
+                            current = current.replaceFirst(copy, "").trim();
                         }
                     } catch (InvalidTranslationDirectionException e) {
                         e.printStackTrace();

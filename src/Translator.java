@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +12,7 @@ public class Translator {
     private int dir;
 
     public String translate(String input, int dir){
-        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\')]");
+        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027)]");
         Matcher m = p.matcher(input);
 
         String output = "";
@@ -82,7 +81,7 @@ public class Translator {
     }
 
     public String translateAskUser(String input, int dir){
-        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\')]");
+        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027)]");
         Matcher m = p.matcher(input);
 
         String output = "";

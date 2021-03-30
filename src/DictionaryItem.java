@@ -1,4 +1,10 @@
-public class DictionaryItem implements Comparable<DictionaryItem> {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class DictionaryItem implements Comparable<DictionaryItem>, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -282205958586708038L;
 
     private String original;
     private String translation;

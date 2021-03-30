@@ -1,3 +1,5 @@
+import java.io.Serial;
+
 /**
  * Exception thrown upon attempting to add a node to a Binary Tree that it already contains
  * @author Kai Uerlichs
@@ -5,9 +7,7 @@
  */
 public class NodeExistsAlreadyException extends Exception {
 
-	/**
-	 * Exception is serialisable
-	 */
+	@Serial
 	private static final long serialVersionUID = -1312932506632288046L;
 
 }

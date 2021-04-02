@@ -53,7 +53,9 @@ public class Dictionary implements Serializable {
 
                 for (String line : lines) {
                     String[] words = line.split(";");
-                    add(words[0],words[1]);
+                    if(words.length == 2){
+                        add(words[0],words[1]);
+                    }
                 }
 
             } catch (IOException e) {

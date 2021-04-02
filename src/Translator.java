@@ -11,8 +11,13 @@ public class Translator {
     private Dictionary dict;
     private int dir;
 
-    public String translate(String input, int dir){
-        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027)]");
+    public Translator(){
+        dict = null;
+        dir = 0;
+    }
+
+    public String translate(String input){
+        Pattern p = Pattern.compile("[^\\w\\s\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027]");
         Matcher m = p.matcher(input);
 
         String output = "";
@@ -46,7 +51,7 @@ public class Translator {
                             copy = copy.substring(0, copy.lastIndexOf(" "));
                         }
                         else{
-                            output = output + copy;
+                            output = output + "<span style='color:blue'>" + copy + "</span>";
                             current = current.replaceFirst(copy, "").trim();
                         }
                     } catch (InvalidTranslationDirectionException e) {
@@ -65,12 +70,12 @@ public class Translator {
         return output.trim();
     }
 
-    public String translate(File input, int dir) throws InvalidFileFormatException {
+    public String translate(File input) throws InvalidFileFormatException {
         String ext = input.getName().substring(input.getName().lastIndexOf("."));
         if(ext.equals(".txt")){
             try {
                 String text = Files.readString(Path.of(input.getAbsolutePath()));
-                return translate(text, dir);
+                return translate(text);
             } catch (IOException e) {
                 throw new InvalidFileFormatException();
             }
@@ -80,8 +85,8 @@ public class Translator {
         }
     }
 
-    public String translateAskUser(String input, int dir){
-        Pattern p = Pattern.compile("[^\\w\\s(?:\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027)]");
+    public String translateAskUser(String input){
+        Pattern p = Pattern.compile("[^\\w\\s\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027]");
         Matcher m = p.matcher(input);
 
         String output = "";
@@ -135,12 +140,12 @@ public class Translator {
         return output.trim();
     }
 
-    public String translateAskUser(File input, int dir) throws InvalidFileFormatException {
+    public String translateAskUser(File input) throws InvalidFileFormatException {
         String ext = input.getName().substring(input.getName().lastIndexOf("."));
         if(ext.equals(".txt")){
             try {
                 String text = Files.readString(Path.of(input.getAbsolutePath()));
-                return translateAskUser(text, dir);
+                return translateAskUser(text);
             } catch (IOException e) {
                 throw new InvalidFileFormatException();
             }
@@ -173,7 +178,14 @@ public class Translator {
 
     public String getUserTranslation(String word){
         JFrame f = new JFrame("Translation not found");
-        return JOptionPane.showInputDialog(f,"Enter translation for: " + word);
+        String translation = JOptionPane.showInputDialog(f,"Enter translation for: " + word, "Translation not found...", JOptionPane.QUESTION_MESSAGE);
+        if(dir == 0){
+            dict.add(word, translation);
+        }
+        else{
+            dict.add(translation, word);
+        }
+        return translation;
     }
 
 }

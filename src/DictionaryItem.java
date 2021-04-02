@@ -1,5 +1,6 @@
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Locale;
 
 public class DictionaryItem implements Comparable<DictionaryItem>, Serializable {
 
@@ -24,6 +25,6 @@ public class DictionaryItem implements Comparable<DictionaryItem>, Serializable 
 
     @Override
     public int compareTo(DictionaryItem x) {
-        return original.compareTo(x.getOriginal());
+        return original.toLowerCase().compareTo(x.getOriginal().toLowerCase());
     }
 }

@@ -4,13 +4,14 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 
 /**
  * Class to represent a Dictionary in the Translator program
  * @version 1.0
  * @author Team 2 AC12001
  */
-public class Dictionary implements Serializable {
+public class Dictionary implements Serializable, Iterable<DictionaryItem> {
 
     @Serial
     private static final long serialVersionUID = 1646427678450944460L;
@@ -210,4 +211,8 @@ public class Dictionary implements Serializable {
 
     }
 
+    @Override
+    public Iterator<DictionaryItem> iterator() {
+        return treeAToB.iterator();
+    }
 }

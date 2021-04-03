@@ -43,6 +43,14 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
 
     }
 
+    /**
+     * Reads in adequately formatted .txt file and generates dictionary
+     * @param input the file to be read in
+     * @param pName name of the dictionary
+     * @param pLanguageA language input
+     * @param pLanguageB language to be translated to
+     * @throws InvalidFileFormatException if file is not txt
+     */
     public Dictionary(File input, String pName, String pLanguageA, String pLanguageB) throws InvalidFileFormatException {
         this(pName, pLanguageA, pLanguageB);
 
@@ -211,6 +219,10 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
 
     }
 
+    /**
+     * Retrieves dictionary items one by one
+     * @return next item
+     */
     @Override
     public Iterator<DictionaryItem> iterator() {
         return treeAToB.iterator();

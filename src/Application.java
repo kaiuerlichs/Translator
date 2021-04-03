@@ -1,14 +1,10 @@
-import org.w3c.dom.DOMImplementation;
-
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.channels.spi.AbstractInterruptibleChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -63,7 +59,13 @@ public class Application {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu mainMenu = new JMenu("Menu");
-        JMenuItem aboutButton = new JMenuItem("About");
+        JMenuItem aboutButton = new JMenuItem("Open User Manual");
+        aboutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openUserManual();
+            }
+        });
         JMenuItem closeButton = new JMenuItem("Close program");
         closeButton.addActionListener(new ActionListener() {
             @Override
@@ -219,7 +221,7 @@ public class Application {
 
     }
 
-    private void newDictionaryFilePrompt() {
+    public void newDictionaryFilePrompt() {
 
         JPanel dialog = new JPanel();
         dialog.setLayout(new GridLayout(3,2));
@@ -418,7 +420,7 @@ public class Application {
 
                 }
                 else{
-                    JOptionPane.showMessageDialog(frame, "You did not select a file. The dictionary was not loadad.", "Error loading dictionary...", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "You did not select a file. The dictionary was not loaded.", "Error loading dictionary...", JOptionPane.WARNING_MESSAGE);
                 }
             }
         };
@@ -623,4 +625,17 @@ public class Application {
         }
     }
 
+    public void openUserManual() {
+        int returnVal = JOptionPane.showConfirmDialog(frame, "This will open the PDF User Manual located in the same directory as the program's .jar executable file.", "Open User Manual", JOptionPane.OK_CANCEL_OPTION);
+
+        if(returnVal == JOptionPane.OK_OPTION){
+            try {
+                File userMan = new File("UserManual.pdf");
+                Desktop.getDesktop().open(userMan);
+            } catch (IOException | IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(frame, "Could not locate PDF file.", "Error opening User Manual...", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+
+    }
 }

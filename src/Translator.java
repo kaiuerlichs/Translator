@@ -145,6 +145,9 @@ public class Translator {
     public String getUserTranslation(String word){
         JFrame f = new JFrame("Translation not found");
         String translation = JOptionPane.showInputDialog(f,"Enter translation for: " + word, "Translation not found...", JOptionPane.QUESTION_MESSAGE);
+        while(translation==null || translation.isBlank()){
+            translation = JOptionPane.showInputDialog(f,"Enter translation for: " + word, "You have to enter a translation...", JOptionPane.QUESTION_MESSAGE);
+        }
         if(dir == 0){
             dict.add(word, translation);
         }

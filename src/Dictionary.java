@@ -120,15 +120,15 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
             return false;
 
         } catch (NodeNotFoundException e) {
-//            try {
-//                found = treeBToA.find(key);
-//                treeBToA.remove(found);
-//                key2 = new DictionaryItem(found.getTranslation(),found.getOriginal());
-//                treeAToB.remove(key2);
-//            }
-//            catch (TreeIsEmptyException | NodeNotFoundException d) {
-//                return false;
-//            }
+            try {
+                found = treeBToA.find(key);
+                treeBToA.remove(found);
+                key2 = new DictionaryItem(found.getTranslation(),found.getOriginal());
+                treeAToB.remove(key2);
+            }
+            catch (TreeIsEmptyException | NodeNotFoundException d) {
+                return false;
+            }
         }
 
         size--;

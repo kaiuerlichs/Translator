@@ -2,6 +2,11 @@ import javax.swing.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The Translator class can be used to load a dictionary and use it to translate text inputs
+ * @author Team 2 AC12002 2020-2021
+ * @version 1.0
+ */
 public class Translator {
 
     private Dictionary dict;

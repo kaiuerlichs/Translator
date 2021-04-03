@@ -23,7 +23,6 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
     private BinaryTree<DictionaryItem> treeAToB;
     private BinaryTree<DictionaryItem> treeBToA;
 
-
     /**
      * Default constructor for an instance of the Dictionary class
      * @param pName Name of the Dictionary
@@ -54,9 +53,11 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
     public Dictionary(File input, String pName, String pLanguageA, String pLanguageB) throws InvalidFileFormatException {
         this(pName, pLanguageA, pLanguageB);
 
+        // Validate file extension
         String ext = input.getName().substring(input.getName().lastIndexOf("."));
         if(ext.equals(".txt")){
             try {
+                // Read in and add translations line by line
                 String txt = Files.readString(Path.of(input.getAbsolutePath()));
                 String[] lines = txt.split("\n");
 
@@ -85,6 +86,7 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
      */
     public boolean add(String wordA, String wordB) {
 
+        //Add word to both trees
         DictionaryItem entryAToB = new DictionaryItem(wordA, wordB);
         DictionaryItem entryBToA = new DictionaryItem(wordB, wordA);
         try {
@@ -94,6 +96,7 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
             return false;
         }
 
+        // Increase size
         size++;
         return true;
 
@@ -106,10 +109,12 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
      */
     public boolean remove(String word) {
 
+        // Create dummy DictionaryItem
         DictionaryItem key = new DictionaryItem(word,"");
         DictionaryItem key2;
         DictionaryItem found;
 
+        // First try remove it in direction 0, if that is not possible do direction 1
         try {
             found = treeAToB.find(key);
             treeAToB.remove(found);
@@ -131,6 +136,7 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
             }
         }
 
+        // Decrease size
         size--;
         return true;
     }
@@ -145,9 +151,11 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
      */
     public String find(String original, int dir) throws NoTranslationFoundException, InvalidTranslationDirectionException {
 
+        // Create dummy DictionaryItem
         DictionaryItem key = new DictionaryItem(original,"");
 
         if(dir == 0){
+            // Search the tree
             try {
                 DictionaryItem result = treeAToB.find(key);
                 return result.getTranslation();
@@ -156,6 +164,7 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
             }
         }
         else if(dir == 1){
+            // Search the tree
             try {
                 DictionaryItem result = treeBToA.find(key);
                 return result.getTranslation();

@@ -70,21 +70,6 @@ public class Translator {
         return output.trim();
     }
 
-    public String translate(File input) throws InvalidFileFormatException {
-        String ext = input.getName().substring(input.getName().lastIndexOf("."));
-        if(ext.equals(".txt")){
-            try {
-                String text = Files.readString(Path.of(input.getAbsolutePath()));
-                return translate(text);
-            } catch (IOException e) {
-                throw new InvalidFileFormatException();
-            }
-        }
-        else{
-            throw new InvalidFileFormatException();
-        }
-    }
-
     public String translateAskUser(String input){
         Pattern p = Pattern.compile("[^\\w\\s\\u00c4, \\u00e4,\\u00d6,\\u00f6,\\u00dc,\\u00fc,\\u00df,\\u0027]");
         Matcher m = p.matcher(input);
@@ -138,21 +123,6 @@ public class Translator {
         }
 
         return output.trim();
-    }
-
-    public String translateAskUser(File input) throws InvalidFileFormatException {
-        String ext = input.getName().substring(input.getName().lastIndexOf("."));
-        if(ext.equals(".txt")){
-            try {
-                String text = Files.readString(Path.of(input.getAbsolutePath()));
-                return translateAskUser(text);
-            } catch (IOException e) {
-                throw new InvalidFileFormatException();
-            }
-        }
-        else{
-            throw new InvalidFileFormatException();
-        }
     }
 
     public Dictionary getDict(){

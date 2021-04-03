@@ -3,11 +3,14 @@ import org.w3c.dom.DOMImplementation;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.channels.spi.AbstractInterruptibleChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -114,7 +117,19 @@ public class Application {
 
         JMenu transMenu = new JMenu("Translation");
         JMenuItem importTextButton = new JMenuItem("Import .txt file");
+        importTextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                importTxtFile();
+            }
+        });
         JMenuItem exportTextButton = new JMenuItem("Export as .txt file");
+        exportTextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exportTxtFile();
+            }
+        });
         transMenu.add(importTextButton); transMenu.add(exportTextButton);
 
         menuBar.add(mainMenu); menuBar.add(dictMenu); menuBar.add(transMenu);
@@ -443,43 +458,48 @@ public class Application {
 
     public void showEditorFrame(){
 
-        editorFrame = new JFrame("View / Edit dictionary");
-
-        JPanel editorPanel = new JPanel();
-        editorPanel.setLayout(new BorderLayout());
-
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-        scrollPane.setViewportView(getDictPanel());
-
-        JPanel infoBar = new JPanel();
-        infoBar.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
-        infoBar.setBackground(Color.DARK_GRAY);
-
-        JLabel infoText = new JLabel("Showing translations from " + translator.getDict().getLanguageA() + " to " + translator.getDict().getLanguageB());
-        infoText.setForeground(Color.WHITE);
-        infoBar.add(infoText);
-
-        JButton addTranslationButton = new JButton("Add translation");
-        addTranslationButton.addActionListener(new ActionListener() {
+        Thread t = new Thread(){
             @Override
-            public void actionPerformed(ActionEvent e) {
-                addTranslationPrompt();
+            public void run(){
+                editorFrame = new JFrame("View / Edit dictionary");
+
+                JPanel editorPanel = new JPanel();
+                editorPanel.setLayout(new BorderLayout());
+
+                JScrollPane scrollPane = new JScrollPane();
+                scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                scrollPane.getVerticalScrollBar().setUnitIncrement(20);
                 scrollPane.setViewportView(getDictPanel());
+
+                JPanel infoBar = new JPanel();
+                infoBar.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
+                infoBar.setBackground(Color.DARK_GRAY);
+
+                JLabel infoText = new JLabel("Showing translations from " + translator.getDict().getLanguageA() + " to " + translator.getDict().getLanguageB());
+                infoText.setForeground(Color.WHITE);
+                infoBar.add(infoText);
+
+                JButton addTranslationButton = new JButton("Add translation");
+                addTranslationButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addTranslationPrompt();
+                        scrollPane.setViewportView(getDictPanel());
+                    }
+                });
+                infoBar.add(addTranslationButton);
+
+                editorPanel.add(infoBar,BorderLayout.NORTH);
+                editorPanel.add(scrollPane, BorderLayout.CENTER);
+
+                editorFrame.setContentPane(editorPanel);
+                editorFrame.setSize(500,400);
+                editorFrame.setMinimumSize(new Dimension(500,400));
+                editorFrame.setVisible(true);
             }
-        });
-        infoBar.add(addTranslationButton);
-
-        editorPanel.add(infoBar,BorderLayout.NORTH);
-        editorPanel.add(scrollPane, BorderLayout.CENTER);
-
-        editorFrame.setContentPane(editorPanel);
-        editorFrame.setSize(500,400);
-        editorFrame.setMinimumSize(new Dimension(500,400));
-        editorFrame.setVisible(true);
-
+        };
+        t.start();
     }
 
     public void addTranslationPrompt() {
@@ -514,25 +534,93 @@ public class Application {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         for (DictionaryItem i:translator.getDict()) {
-            JPanel p = new JPanel();
-            p.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
-            JLabel a = new JLabel(i.getOriginal());
-            JLabel b = new JLabel(i.getTranslation());
-            JButton c = new JButton("X");
-            c.addActionListener(new ActionListener() {
+            JPanel translationPanel = new JPanel();
+            translationPanel.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
+            JLabel langA = new JLabel(i.getOriginal());
+            JLabel langB = new JLabel(i.getTranslation());
+            JButton deleteButton = new JButton("X");
+            deleteButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     translator.getDict().remove(i.getOriginal());
-                    mainPanel.remove(p);
+                    mainPanel.remove(translationPanel);
                     mainPanel.revalidate();
                 }
             });
-            p.add(a);
-            p.add(b);
-            p.add(c);
-            mainPanel.add(p);
+            translationPanel.add(langA);
+            translationPanel.add(langB);
+            translationPanel.add(deleteButton);
+            mainPanel.add(translationPanel);
         }
+
         return mainPanel;
+    }
+
+    public void importTxtFile(){
+        Thread t = new Thread(){
+            @Override
+            public void run(){
+                JFileChooser fc = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt files", "txt");
+
+                int returnVal = fc.showOpenDialog(frame);
+
+                if(returnVal == JFileChooser.APPROVE_OPTION){
+                    File input = fc.getSelectedFile();
+                    String ext = input.getName().substring(input.getName().lastIndexOf("."));
+                    if(ext.equals(".txt")){
+                        try {
+                            String text = Files.readString(Path.of(input.getAbsolutePath()));
+                            inputArea.setText(text);
+                            translateText();
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(frame, "Something went wrong reading the .txt file.", "Error importing text...", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(frame, "You need to prove a .txt file.", "Error importing text...", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        };
+        t.start();
+    }
+
+    public void exportTxtFile(){
+        if(outputArea.getText().isBlank()){
+            JOptionPane.showMessageDialog(frame, "There is nothing to be saved.", "Error exporting translation...",  JOptionPane.WARNING_MESSAGE);
+        }
+        else{
+            Thread t = new Thread(){
+                @Override
+                public void run(){
+                    JFileChooser fc = new JFileChooser();
+                    fc.setSelectedFile(new File("translation.txt"));
+                    int returnVal = fc.showSaveDialog(frame);
+
+                    if(returnVal == JFileChooser.APPROVE_OPTION){
+                        File file = fc.getSelectedFile();
+                        String ext = file.getName().substring(file.getName().lastIndexOf("."));
+
+                        if(ext.equals(".txt")){
+                            try {
+                                Files.writeString(Path.of(file.getAbsolutePath()),outputArea.getDocument().getText(0,outputArea.getDocument().getLength()));
+                            } catch (IOException | BadLocationException e) {
+                                JOptionPane.showMessageDialog(frame, "A non-fatal error occurred while exporting the translation and it may not have saved.", "Error exporting translation...", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(frame, "This file extension is invalid. Please use the .txt extension.", "Error exporting translation...", JOptionPane.WARNING_MESSAGE);
+                        }
+
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(frame, "You did not select a file. The translation was not saved.", "Error exporting translation...", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            };
+            t.start();
+        }
     }
 
 }

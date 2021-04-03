@@ -98,7 +98,7 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
      */
     public boolean remove(String word) {
 
-        DictionaryItem key = new DictionaryItem("key","");
+        DictionaryItem key = new DictionaryItem(word,"");
         DictionaryItem key2;
         DictionaryItem found;
 
@@ -112,15 +112,15 @@ public class Dictionary implements Serializable, Iterable<DictionaryItem> {
             return false;
 
         } catch (NodeNotFoundException e) {
-            try {
-                found = treeBToA.find(key);
-                treeBToA.remove(found);
-                key2 = new DictionaryItem(found.getTranslation(),found.getOriginal());
-                treeAToB.remove(key2);
-            }
-            catch (TreeIsEmptyException | NodeNotFoundException d) {
-                return false;
-            }
+//            try {
+//                found = treeBToA.find(key);
+//                treeBToA.remove(found);
+//                key2 = new DictionaryItem(found.getTranslation(),found.getOriginal());
+//                treeAToB.remove(key2);
+//            }
+//            catch (TreeIsEmptyException | NodeNotFoundException d) {
+//                return false;
+//            }
         }
 
         size--;

@@ -1,4 +1,7 @@
+import org.w3c.dom.DOMImplementation;
+
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,12 +21,15 @@ public class Application {
     private Translator translator;
     private JFrame frame;
     private JLabel statusText;
+    private JMenuItem saveDictButton;
+    private JMenuItem editDictButton;
     private JButton changeDirButton;
     private JButton translateButton;
-    JCheckBox addUserTranslation;
-    JTextPane inputArea;
-    JTextPane outputArea;
-    JLabel translationText;
+    private JCheckBox addUserTranslation;
+    private JTextPane inputArea;
+    private JTextPane outputArea;
+    private JLabel translationText;
+    private JFrame editorFrame;
 
     public static void main(String[] args) {
         Application app = new Application();
@@ -59,7 +65,9 @@ public class Application {
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.dispose();
+                for (Frame f: Frame.getFrames()) {
+                    f.dispose();
+                }
             }
         });
         mainMenu.add(aboutButton); mainMenu.add(closeButton);
@@ -72,15 +80,23 @@ public class Application {
                 newDictionaryPrompt();
             }
         });
-        JMenuItem newDictFileButton = new JMenuItem("Import Dictionary from File");
+        JMenuItem newDictFileButton = new JMenuItem("Import Dictionary from Text File");
         newDictFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 newDictionaryFilePrompt();
             }
         });
-        JMenuItem editDictButton = new JMenuItem("View/Edit Dictionary");
-        JMenuItem saveDictButton = new JMenuItem("Save Dictionary");
+        editDictButton = new JMenuItem("View/Edit Dictionary");
+        editDictButton.setEnabled(false);
+        editDictButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showEditorFrame();
+            }
+        });
+        saveDictButton = new JMenuItem("Save Dictionary");
+        saveDictButton.setEnabled(false);
         saveDictButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -182,7 +198,7 @@ public class Application {
 
         frame.setContentPane(main);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(400,300);
+        frame.setSize(720,480);
         frame.setMinimumSize(new Dimension(400,300));
         frame.setVisible(true);
 
@@ -211,8 +227,9 @@ public class Application {
 
         JOptionPane.showMessageDialog(frame, dialog, "New dictionary...", JOptionPane.QUESTION_MESSAGE);
 
-        while(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
-            JOptionPane.showMessageDialog(frame, dialog, "The fields cannot be blank...", JOptionPane.QUESTION_MESSAGE);
+        if(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
+            JOptionPane.showMessageDialog(frame, "Some of the fields were empty. No dictionary created.", "Error creating translation...", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         JFileChooser fc = new JFileChooser();
@@ -259,8 +276,9 @@ public class Application {
 
         JOptionPane.showMessageDialog(frame, dialog, "New dictionary...", JOptionPane.QUESTION_MESSAGE);
 
-        while(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
-            JOptionPane.showMessageDialog(frame, dialog, "The fields cannot be blank...", JOptionPane.QUESTION_MESSAGE);
+        if(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
+            JOptionPane.showMessageDialog(frame, "Some of the fields were empty. No dictionary created.", "Error creating translation...", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         Dictionary d = new Dictionary(nameInput.getText(),lang1Input.getText(),lang2Input.getText());
@@ -275,6 +293,8 @@ public class Application {
             statusText.setText("No current dictionary selected...");
             changeDirButton.setEnabled(false);
             translateButton.setEnabled(false);
+            editDictButton.setEnabled(false);
+            saveDictButton.setEnabled(false);
         }
         else{
             if(translator.getDir() == 0){
@@ -285,6 +305,8 @@ public class Application {
             }
             changeDirButton.setEnabled(true);
             translateButton.setEnabled(true);
+            editDictButton.setEnabled(true);
+            saveDictButton.setEnabled(true);
         }
 
     }
@@ -417,6 +439,100 @@ public class Application {
             }
         };
         t.start();
+    }
+
+    public void showEditorFrame(){
+
+        editorFrame = new JFrame("View / Edit dictionary");
+
+        JPanel editorPanel = new JPanel();
+        editorPanel.setLayout(new BorderLayout());
+
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+        scrollPane.setViewportView(getDictPanel());
+
+        JPanel infoBar = new JPanel();
+        infoBar.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
+        infoBar.setBackground(Color.DARK_GRAY);
+
+        JLabel infoText = new JLabel("Showing translations from " + translator.getDict().getLanguageA() + " to " + translator.getDict().getLanguageB());
+        infoText.setForeground(Color.WHITE);
+        infoBar.add(infoText);
+
+        JButton addTranslationButton = new JButton("Add translation");
+        addTranslationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addTranslationPrompt();
+                scrollPane.setViewportView(getDictPanel());
+            }
+        });
+        infoBar.add(addTranslationButton);
+
+        editorPanel.add(infoBar,BorderLayout.NORTH);
+        editorPanel.add(scrollPane, BorderLayout.CENTER);
+
+        editorFrame.setContentPane(editorPanel);
+        editorFrame.setSize(500,400);
+        editorFrame.setMinimumSize(new Dimension(500,400));
+        editorFrame.setVisible(true);
+
+    }
+
+    public void addTranslationPrompt() {
+
+        JPanel dialog = new JPanel();
+        dialog.setLayout(new GridLayout(2,2));
+        dialog.setPreferredSize(new Dimension(300,75));
+
+        JLabel lang1 = new JLabel(translator.getDict().getLanguageA());
+        dialog.add(lang1);
+        JTextField lang1Input = new JTextField();
+        dialog.add(lang1Input);
+
+        JLabel lang2 = new JLabel(translator.getDict().getLanguageB());
+        dialog.add(lang2);
+        JTextField lang2Input = new JTextField();
+        dialog.add(lang2Input);
+
+        JOptionPane.showMessageDialog(editorFrame, dialog, "New translation...", JOptionPane.QUESTION_MESSAGE);
+
+        if(lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
+            JOptionPane.showMessageDialog(editorFrame, "Some of the fields were empty. No translation added.", "Error adding translation...", JOptionPane.WARNING_MESSAGE);
+        }
+        else{
+            translator.getDict().add(lang1Input.getText(),lang2Input.getText());
+        }
+
+    }
+
+    public JPanel getDictPanel() {
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+        for (DictionaryItem i:translator.getDict()) {
+            JPanel p = new JPanel();
+            p.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
+            JLabel a = new JLabel(i.getOriginal());
+            JLabel b = new JLabel(i.getTranslation());
+            JButton c = new JButton("X");
+            c.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    translator.getDict().remove(i.getOriginal());
+                    mainPanel.remove(p);
+                    mainPanel.revalidate();
+                }
+            });
+            p.add(a);
+            p.add(b);
+            p.add(c);
+            mainPanel.add(p);
+        }
+        return mainPanel;
     }
 
 }

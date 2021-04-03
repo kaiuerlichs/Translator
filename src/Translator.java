@@ -7,12 +7,22 @@ public class Translator {
     private Dictionary dict;
     private int dir;
 
+    /**
+     * Default constructor for the Translator class
+     */
     public Translator(){
         dict = null;
         dir = 0;
     }
 
+    /**
+     * Translates a String using the dictionary on the current direction of the Translator
+     * @param input The String to translate
+     * @return The translation
+     */
     public String translate(String input){
+
+        // Initialise regex pattern and matcher
         Pattern p = Pattern.compile("[^\\w\\s\\u00c4\\u00e4\\u00d6\\u00f6\\u00dc\\u00fc\\u00df\\u0027]");
         Matcher m = p.matcher(input);
 
@@ -63,10 +73,18 @@ public class Translator {
 
         }
 
+        // Return trimmed translation
         return output.trim();
     }
 
+    /**
+     * Translates a String using the dictionary on the current direction of the Translator, ask user for missing translations
+     * @param input The String to translate
+     * @return The translation
+     */
     public String translateAskUser(String input){
+
+        // Initialise regex pattern and matcher
         Pattern p = Pattern.compile("[^\\w\\s\\u00c4\\u00e4\\u00d6\\u00f6\\u00dc\\u00fc\\u00df\\u0027]");
         Matcher m = p.matcher(input);
 
@@ -118,21 +136,37 @@ public class Translator {
 
         }
 
+        // Return trimmed translation
         return output.trim();
     }
 
+    /**
+     * Return the Dictionary
+     * @return the Dictionary
+     */
     public Dictionary getDict(){
         return dict;
     }
 
+    /**
+     * Set the dictionary
+     * @param pDict Set the dictionary
+     */
     public void setDict(Dictionary pDict){
         dict = pDict;
     }
 
+    /**
+     * Get the current direction
+     * @return The current direction
+     */
     public int getDir(){
         return dir;
     }
 
+    /**
+     * Toggles the direction between 0 and 1
+     */
     public void toggleDir(){
         if(dir==0){
             dir = 1;
@@ -142,6 +176,11 @@ public class Translator {
         }
     }
 
+    /**
+     * Get a user-specified translation for a specific word
+     * @param word The word to be translated
+     * @return The translation
+     */
     public String getUserTranslation(String word){
         JFrame f = new JFrame("Translation not found");
         String translation = JOptionPane.showInputDialog(f,"Enter translation for: " + word, "Translation not found...", JOptionPane.QUESTION_MESSAGE);

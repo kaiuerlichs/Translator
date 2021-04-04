@@ -1,3 +1,5 @@
+import java.io.OutputStream;
+
 public class Test {
 
     /**
@@ -9,7 +11,7 @@ public class Test {
         Dictionary d = new Dictionary("Test", "a", "b");
 
         //adding items to dictionary test
-        boolean result = d.add("a"  , "b");
+        boolean result = d.add("a" , "b");
         boolean result2 = d.add ("c", "d");
         boolean result3 = d.add ("a","b");
 
@@ -17,7 +19,23 @@ public class Test {
         System.out.println("Adding item successful: " + result2);
         System.out.println("Adding item successful: " + result3);
 
-        //boolean findResult = d.find("a");
+        String findResult = null;
+        try {
+            findResult = d.find("a", 0);
+            System.out.println("Found: " + findResult);
+        } catch (NoTranslationFoundException | InvalidTranslationDirectionException e) {
+            System.out.println("caught exception:" + e.getClass());
+        }
+
+        String findResult2 = null;
+        try {
+            findResult = d.find("e", 0);
+            System.out.println("Found: " + findResult2);
+        } catch (NoTranslationFoundException | InvalidTranslationDirectionException e) {
+            System.out.println("caught exception:" + e.getClass());
+        }
+
+
 
         //removing item from dictionary test
         boolean removeResult = d.remove ("a");
@@ -26,6 +44,29 @@ public class Test {
         System.out.println("Removing item successful: " + removeResult);
         System.out.println("Removing item successful: " + removeResult2);
 
+
+        //translator tests
+        Dictionary dt = new Dictionary("Test", "a", "b");
+        Translator t = new Translator();
+        t.setDict(dt);
+
+        dt.add("Hello","Hola");
+        dt.add("my","mi");
+        dt.add("name","nombre");
+        dt.add("is","es");
+
+        //A to B test
+        String translateResult = t.translate("Hello my name is");
+        System.out.println("A to B: " + translateResult);
+
+        //B to A test
+        t.toggleDir();
+        String translateResult2 = t.translate("Hola mi nombre es");
+        System.out.println("B to A: " + translateResult2);
+
+
+        String userInputTranslation = t.translateAskUser("Hola mi nombre es Christopher");
+        System.out.println("User input translation: " + userInputTranslation);
     }
 
 

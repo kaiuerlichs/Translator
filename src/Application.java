@@ -705,7 +705,7 @@ public class Application {
                         }
                     }
                     else{
-                        JOptionPane.showMessageDialog(frame, "You need to prove a .txt file.", "Error importing text...", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "You need to provide a .txt file.", "Error importing text...", JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }

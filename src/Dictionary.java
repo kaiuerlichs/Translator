@@ -8,8 +8,8 @@ import java.util.Iterator;
 
 /**
  * Class to represent a Dictionary in the Translator program
+ * @author Team 2 AC12002 2020-2021
  * @version 1.0
- * @author Team 2 AC12001
  */
 public class Dictionary implements Serializable, Iterable<DictionaryItem> {
 

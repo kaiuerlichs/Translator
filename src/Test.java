@@ -2,6 +2,9 @@ import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 
+/**
+ * Class used to run automated test code on the project
+ */
 public class Test {
 
 //    /**

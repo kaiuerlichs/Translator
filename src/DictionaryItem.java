@@ -2,6 +2,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Locale;
 
+/**
+ * Class representing an item in a Dictionary
+ * @author Team 2 AC12002 2020-2021
+ * @version 1.0
+ */
 public class DictionaryItem implements Comparable<DictionaryItem>, Serializable {
 
     @Serial

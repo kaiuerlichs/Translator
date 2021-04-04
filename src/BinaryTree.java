@@ -1,5 +1,7 @@
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
@@ -13,6 +15,7 @@ public class BinaryTree<T extends Comparable<T>> implements Iterable<T>, Seriali
 	/**
 	 * Class is serialisable
 	 */
+	@Serial
 	private static final long serialVersionUID = 3914790424687763034L;
 	
 	/**
@@ -265,7 +268,13 @@ public class BinaryTree<T extends Comparable<T>> implements Iterable<T>, Seriali
 		 * Default constructor
 		 */
 		public InorderIterator(){
-			i = root.getInorderQueue();
+			if(isEmpty()){
+				i = new LinkedList<T>();
+			}
+			else{
+				i = root.getInorderQueue();
+			}
+
 		}
 		
 		@Override

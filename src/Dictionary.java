@@ -4,13 +4,14 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 
 /**
  * Class to represent a Dictionary in the Translator program
  * @version 1.0
  * @author Team 2 AC12001
  */
-public class Dictionary implements Serializable {
+public class Dictionary implements Serializable, Iterable<DictionaryItem> {
 
     @Serial
     private static final long serialVersionUID = 1646427678450944460L;
@@ -21,7 +22,6 @@ public class Dictionary implements Serializable {
     private String languageB;
     private BinaryTree<DictionaryItem> treeAToB;
     private BinaryTree<DictionaryItem> treeBToA;
-
 
     /**
      * Default constructor for an instance of the Dictionary class
@@ -42,18 +42,30 @@ public class Dictionary implements Serializable {
 
     }
 
+    /**
+     * Reads in adequately formatted .txt file and generates dictionary
+     * @param input the file to be read in
+     * @param pName name of the dictionary
+     * @param pLanguageA language input
+     * @param pLanguageB language to be translated to
+     * @throws InvalidFileFormatException if file is not txt
+     */
     public Dictionary(File input, String pName, String pLanguageA, String pLanguageB) throws InvalidFileFormatException {
         this(pName, pLanguageA, pLanguageB);
 
+        // Validate file extension
         String ext = input.getName().substring(input.getName().lastIndexOf("."));
         if(ext.equals(".txt")){
             try {
+                // Read in and add translations line by line
                 String txt = Files.readString(Path.of(input.getAbsolutePath()));
                 String[] lines = txt.split("\n");
 
                 for (String line : lines) {
                     String[] words = line.split(";");
-                    add(words[0],words[1]);
+                    if(words.length == 2){
+                        add(words[0],words[1]);
+                    }
                 }
 
             } catch (IOException e) {
@@ -74,6 +86,7 @@ public class Dictionary implements Serializable {
      */
     public boolean add(String wordA, String wordB) {
 
+        //Add word to both trees
         DictionaryItem entryAToB = new DictionaryItem(wordA, wordB);
         DictionaryItem entryBToA = new DictionaryItem(wordB, wordA);
         try {
@@ -83,6 +96,7 @@ public class Dictionary implements Serializable {
             return false;
         }
 
+        // Increase size
         size++;
         return true;
 
@@ -95,10 +109,12 @@ public class Dictionary implements Serializable {
      */
     public boolean remove(String word) {
 
-        DictionaryItem key = new DictionaryItem("key","");
+        // Create dummy DictionaryItem
+        DictionaryItem key = new DictionaryItem(word,"");
         DictionaryItem key2;
         DictionaryItem found;
 
+        // First try remove it in direction 0, if that is not possible do direction 1
         try {
             found = treeAToB.find(key);
             treeAToB.remove(found);
@@ -120,6 +136,7 @@ public class Dictionary implements Serializable {
             }
         }
 
+        // Decrease size
         size--;
         return true;
     }
@@ -134,9 +151,11 @@ public class Dictionary implements Serializable {
      */
     public String find(String original, int dir) throws NoTranslationFoundException, InvalidTranslationDirectionException {
 
+        // Create dummy DictionaryItem
         DictionaryItem key = new DictionaryItem(original,"");
 
         if(dir == 0){
+            // Search the tree
             try {
                 DictionaryItem result = treeAToB.find(key);
                 return result.getTranslation();
@@ -145,6 +164,7 @@ public class Dictionary implements Serializable {
             }
         }
         else if(dir == 1){
+            // Search the tree
             try {
                 DictionaryItem result = treeBToA.find(key);
                 return result.getTranslation();
@@ -208,4 +228,12 @@ public class Dictionary implements Serializable {
 
     }
 
+    /**
+     * Retrieves dictionary items one by one
+     * @return next item
+     */
+    @Override
+    public Iterator<DictionaryItem> iterator() {
+        return treeAToB.iterator();
+    }
 }

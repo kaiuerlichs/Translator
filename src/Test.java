@@ -1,5 +1,8 @@
 import java.io.OutputStream;
 
+/**
+ * Class used to run automated test code on the project
+ */
 public class Test {
 
     /**
@@ -68,6 +71,5 @@ public class Test {
         String userInputTranslation = t.translateAskUser("Hola mi nombre es Christopher");
         System.out.println("User input translation: " + userInputTranslation);
     }
-
 
 }

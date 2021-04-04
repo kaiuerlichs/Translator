@@ -12,11 +12,12 @@ import java.time.temporal.ChronoUnit;
 
 /**
  * Main class for the Translator project, containing the GUI
- * @author Team 2
+ * @author Team 2 AC12002 2020-2021
  * @version 1.0
  */
 public class Application {
 
+    // Declaration of several UI components that need to be called on by several methods
     private Translator translator;
     private JFrame frame;
     private JLabel statusText;
@@ -30,6 +31,10 @@ public class Application {
     private JLabel translationText;
     private JFrame editorFrame;
 
+    /**
+     * Main method to initialise and start the Graphic User Interface on the EDT
+     * @param args Not used
+     */
     public static void main(String[] args) {
         Application app = new Application();
 
@@ -46,19 +51,29 @@ public class Application {
         });
     }
 
+    /**
+     * Default constructor for the Application class, initialising the Translator
+     */
     public Application(){
 
         translator = new Translator();
 
     }
 
+    /**
+     * Method creates the main window for the program and makes it visible
+     */
     public void createWindow(){
 
+        // Initialise frame
         frame = new JFrame("Translator");
 
+        // Initialise a menu bar
         JMenuBar menuBar = new JMenuBar();
 
+        // Add "Menu" dropdown to menu bar
         JMenu mainMenu = new JMenu("Menu");
+        // Add User Manual button and ActionListener
         JMenuItem aboutButton = new JMenuItem("Open User Manual");
         aboutButton.addActionListener(new ActionListener() {
             @Override
@@ -66,6 +81,7 @@ public class Application {
                 openUserManual();
             }
         });
+        // Add Close button and ActionListener
         JMenuItem closeButton = new JMenuItem("Close program");
         closeButton.addActionListener(new ActionListener() {
             @Override
@@ -77,7 +93,9 @@ public class Application {
         });
         mainMenu.add(aboutButton); mainMenu.add(closeButton);
 
+        // Add "Dictionary" dropdown to menu bar
         JMenu dictMenu = new JMenu("Dictionary");
+        // Add New Dictionary button and ActionListener
         JMenuItem newDictButton = new JMenuItem("New Dictionary");
         newDictButton.addActionListener(new ActionListener() {
             @Override
@@ -85,6 +103,7 @@ public class Application {
                 newDictionaryPrompt();
             }
         });
+        // Add Import Dictionary from Text File button and ActionListener
         JMenuItem newDictFileButton = new JMenuItem("Import Dictionary from Text File");
         newDictFileButton.addActionListener(new ActionListener() {
             @Override
@@ -92,6 +111,7 @@ public class Application {
                 newDictionaryFilePrompt();
             }
         });
+        // Add Edit Dictionary button and ActionListener
         editDictButton = new JMenuItem("View/Edit Dictionary");
         editDictButton.setEnabled(false);
         editDictButton.addActionListener(new ActionListener() {
@@ -100,6 +120,7 @@ public class Application {
                 showEditorFrame();
             }
         });
+        // Add Save Dictionary button and ActionListener
         saveDictButton = new JMenuItem("Save Dictionary");
         saveDictButton.setEnabled(false);
         saveDictButton.addActionListener(new ActionListener() {
@@ -108,6 +129,7 @@ public class Application {
                 saveDictionary();
             }
         });
+        // Add Load Dictionary button and ActionListener
         JMenuItem loadDictButton = new JMenuItem("Load Dictionary");
         loadDictButton.addActionListener(new ActionListener() {
             @Override
@@ -117,7 +139,9 @@ public class Application {
         });
         dictMenu.add(newDictButton); dictMenu.add(newDictFileButton); dictMenu.add(editDictButton); dictMenu.add(saveDictButton); dictMenu.add(loadDictButton);
 
+        // Add "Translation" dropdown to menu bar
         JMenu transMenu = new JMenu("Translation");
+        // Add Import Text button and ActionListener
         JMenuItem importTextButton = new JMenuItem("Import .txt file");
         importTextButton.addActionListener(new ActionListener() {
             @Override
@@ -125,6 +149,7 @@ public class Application {
                 importTxtFile();
             }
         });
+        // Add Export Text button and ActionListener
         JMenuItem exportTextButton = new JMenuItem("Export as .txt file");
         exportTextButton.addActionListener(new ActionListener() {
             @Override
@@ -134,12 +159,15 @@ public class Application {
         });
         transMenu.add(importTextButton); transMenu.add(exportTextButton);
 
+        // Add dropdowns to menu bar and menu bar to frame
         menuBar.add(mainMenu); menuBar.add(dictMenu); menuBar.add(transMenu);
         frame.setJMenuBar(menuBar);
 
+        // Create main panel and set layout manager
         JPanel main = new JPanel();
         main.setLayout(new BorderLayout());
 
+        // Create status bar as GridBag container
         JPanel statusBar = new JPanel();
         statusBar.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -148,6 +176,7 @@ public class Application {
         c.gridy = 0;
         c.weightx = 1;
 
+        // Add components to status bar
         statusText = new JLabel("No current dictionary selected...");
         statusBar.add(statusText,c);
 
@@ -178,9 +207,11 @@ public class Application {
         });
         statusBar.add(translateButton,c);
 
+        // Create inout panel as GridBag container
         JPanel inout = new JPanel();
         inout.setLayout(new GridBagLayout());
 
+        // Add components to inout panel
         c.insets = new Insets(10,4,4,4);
         c.gridx = 0;
         c.gridy = 0;
@@ -213,20 +244,25 @@ public class Application {
         main.add(statusBar, BorderLayout.NORTH);
         main.add(inout, BorderLayout.CENTER);
 
+        // Finalise frame and set visible
         frame.setContentPane(main);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(720,480);
         frame.setMinimumSize(new Dimension(400,300));
         frame.setVisible(true);
-
     }
 
-    public void newDictionaryFilePrompt() {
+    /**
+     * Opens "New Dictionary" prompt, creates and loads a new dictionary for the Translator
+     */
+    public void newDictionaryPrompt(){
 
+        // Create new panel for dialog window
         JPanel dialog = new JPanel();
         dialog.setLayout(new GridLayout(3,2));
         dialog.setPreferredSize(new Dimension(300,75));
 
+        // Add components to dialog panel
         JLabel name = new JLabel("Dictionary name: ");
         dialog.add(name);
         JTextField nameInput = new JTextField();
@@ -242,18 +278,63 @@ public class Application {
         JTextField lang2Input = new JTextField();
         dialog.add(lang2Input);
 
+        // Show dialog modal with custom panel
         JOptionPane.showMessageDialog(frame, dialog, "New dictionary...", JOptionPane.QUESTION_MESSAGE);
 
+        // Validate input
         if(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
             JOptionPane.showMessageDialog(frame, "Some of the fields were empty. No dictionary created.", "Error creating translation...", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
+        // If successful, create new dictionary and set current, then update status bar
+        Dictionary d = new Dictionary(nameInput.getText(),lang1Input.getText(),lang2Input.getText());
+        translator.setDict(d);
+        updateStatus();
+    }
+
+    /**
+     * Opens "New Dictionary from Text File" prompt, creates and loads a new dictionary for the Translator based on txt file
+     */
+    public void newDictionaryFilePrompt() {
+
+        // Creates panel for custom dialog
+        JPanel dialog = new JPanel();
+        dialog.setLayout(new GridLayout(3,2));
+        dialog.setPreferredSize(new Dimension(300,75));
+
+        // Add components to dialog panel
+        JLabel name = new JLabel("Dictionary name: ");
+        dialog.add(name);
+        JTextField nameInput = new JTextField();
+        dialog.add(nameInput);
+
+        JLabel lang1 = new JLabel("Language 1: ");
+        dialog.add(lang1);
+        JTextField lang1Input = new JTextField();
+        dialog.add(lang1Input);
+
+        JLabel lang2 = new JLabel("Language 2: ");
+        dialog.add(lang2);
+        JTextField lang2Input = new JTextField();
+        dialog.add(lang2Input);
+
+        // Show dialog modal with custom panel
+        JOptionPane.showMessageDialog(frame, dialog, "New dictionary...", JOptionPane.QUESTION_MESSAGE);
+
+        // Validate input
+        if(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
+            JOptionPane.showMessageDialog(frame, "Some of the fields were empty. No dictionary created.", "Error creating translation...", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Initialise File Chooser and set extension filter
         JFileChooser fc = new JFileChooser();
         fc.setFileFilter(new FileNameExtensionFilter("Formatted .txt files", "txt"));
 
         int returnVal = fc.showOpenDialog(frame);
 
+        // Create dictionary from txt file
         if(returnVal == JFileChooser.APPROVE_OPTION){
             File file = fc.getSelectedFile();
             try {
@@ -264,48 +345,19 @@ public class Application {
                 JOptionPane.showMessageDialog(frame, "You selected an incompatible file. The dictionary was not created.", "Error creating dictionary...", JOptionPane.WARNING_MESSAGE);
             }
         }
+        // Show error message
         else{
             JOptionPane.showMessageDialog(frame, "You did not select a file. The dictionary was not created.", "Error creating dictionary...", JOptionPane.WARNING_MESSAGE);
         }
 
     }
 
-    public void newDictionaryPrompt(){
-
-        JPanel dialog = new JPanel();
-        dialog.setLayout(new GridLayout(3,2));
-        dialog.setPreferredSize(new Dimension(300,75));
-
-        JLabel name = new JLabel("Dictionary name: ");
-        dialog.add(name);
-        JTextField nameInput = new JTextField();
-        dialog.add(nameInput);
-
-        JLabel lang1 = new JLabel("Language 1: ");
-        dialog.add(lang1);
-        JTextField lang1Input = new JTextField();
-        dialog.add(lang1Input);
-
-        JLabel lang2 = new JLabel("Language 2: ");
-        dialog.add(lang2);
-        JTextField lang2Input = new JTextField();
-        dialog.add(lang2Input);
-
-        JOptionPane.showMessageDialog(frame, dialog, "New dictionary...", JOptionPane.QUESTION_MESSAGE);
-
-        if(nameInput.getText().isBlank() || lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
-            JOptionPane.showMessageDialog(frame, "Some of the fields were empty. No dictionary created.", "Error creating translation...", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        Dictionary d = new Dictionary(nameInput.getText(),lang1Input.getText(),lang2Input.getText());
-        translator.setDict(d);
-        updateStatus();
-
-    }
-
+    /**
+     * Updates the information displayed in the status bar and unlocks some buttons
+     */
     public void updateStatus(){
 
+        // If no dictionary is selected, deactivate buttons
         if(translator.getDict() == null){
             statusText.setText("No current dictionary selected...");
             changeDirButton.setEnabled(false);
@@ -313,6 +365,7 @@ public class Application {
             editDictButton.setEnabled(false);
             saveDictButton.setEnabled(false);
         }
+        // Else, update status message and eneable buttons
         else{
             if(translator.getDir() == 0){
                 statusText.setText("Translating from " + translator.getDict().getLanguageA() + " to " + translator.getDict().getLanguageB() + "...");
@@ -328,20 +381,29 @@ public class Application {
 
     }
 
+    /**
+     * Saves the current dictionary file as a serialised object using the .mydict file extension
+     */
     public void saveDictionary(){
+
+        // Show error if no dictionary is current
         if(translator.getDict() == null){
             JOptionPane.showMessageDialog(frame, "There is no current dictionary selected.", "Error saving dictionary...",  JOptionPane.WARNING_MESSAGE);
         }
         else{
+            // Open new thread to improve GUI performance
             Thread t = new Thread(){
                 @Override
                 public void run(){
+                    // Get dictionary
                     Dictionary d = translator.getDict();
 
+                    // Create File Chooser and get save location from user
                     JFileChooser fc = new JFileChooser();
                     fc.setSelectedFile(new File(translator.getDict().getName() + ".mydict"));
                     int returnVal = fc.showSaveDialog(frame);
 
+                    // Validate extension and write file to save location, show errors as needed
                     if(returnVal == JFileChooser.APPROVE_OPTION){
                         File file = fc.getSelectedFile();
                         String ext = file.getName().substring(file.getName().lastIndexOf("."));
@@ -373,18 +435,26 @@ public class Application {
                     }
                 }
             };
+            // Start the thread
             t.start();
         }
 
     }
 
+    /**
+     * Loads a dictionary from a .mydict file containing the serialised object
+     */
     public void loadDictionary(){
+
+        // Create new thread to improve GUI performance
         Thread t = new Thread(){
             @Override
             public void run(){
+                // Create File Chooser and extension filter
                 JFileChooser fc = new JFileChooser();
                 fc.setFileFilter(new FileNameExtensionFilter(".mydict files", "mydict"));
 
+                // Get file from user
                 int returnVal = fc.showOpenDialog(frame);
 
                 if(returnVal == JFileChooser.APPROVE_OPTION){
@@ -392,6 +462,7 @@ public class Application {
                     File file = fc.getSelectedFile();
                     String ext = file.getName().substring(file.getName().lastIndexOf("."));
 
+                    // Validate extension and read in dictionary, then update status. Show errors where appropriate.
                     if(ext.equals(".mydict")){
 
                         FileInputStream fileIn;
@@ -424,9 +495,14 @@ public class Application {
                 }
             }
         };
+        // Start the thread
         t.start();
+
     }
 
+    /**
+     * Change the translation direction on the Translator
+     */
     public void changeDir(){
 
         translator.toggleDir();
@@ -434,13 +510,19 @@ public class Application {
 
     }
 
+    /**
+     * Translates the user input with the options specified by the user
+     */
     public void translateText(){
+        // Create a new thread to improve GUI performance
         Thread t = new Thread(){
             @Override
             public void run(){
+                // Get user input
                 String original = inputArea.getText();
                 String translation;
 
+                // If live editing is disabled, translate the text and time the execution using Instants
                 if(!addUserTranslation.isSelected()){
                     Instant start = Instant.now();
                     translation = translator.translate(original);
@@ -448,40 +530,55 @@ public class Application {
                     long ms = ChronoUnit.MILLIS.between(start,end);
                     translationText.setText("<html>Translation <i>"+ms+" ms elapsed</i></html>");
                 }
+                // If live editing is enabled, deactivate the timer
                 else{
                     translation = translator.translateAskUser(original);
                     translationText.setText("<html>Translation <i>Timer disabled</i></html>");
                 }
+                // Update output area
                 outputArea.setText("<html>" + translation + "</html>");
             }
         };
+        //Start the thread
         t.start();
+
     }
 
+    /**
+     * Create and show the Edit Dictionary window
+     */
     public void showEditorFrame(){
 
+        // Create new thread to improve performance
         Thread t = new Thread(){
             @Override
             public void run(){
+                // Initialise frame
                 editorFrame = new JFrame("View / Edit dictionary");
 
+                // Set panel for frame
                 JPanel editorPanel = new JPanel();
                 editorPanel.setLayout(new BorderLayout());
 
+                // Create and setup scroll pane
                 JScrollPane scrollPane = new JScrollPane();
                 scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+                // Get content for scrollPane
                 scrollPane.setViewportView(getDictPanel());
 
+                // Create and setup info bar
                 JPanel infoBar = new JPanel();
                 infoBar.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
                 infoBar.setBackground(Color.DARK_GRAY);
 
+                // Add label to info bar
                 JLabel infoText = new JLabel("Showing translations from " + translator.getDict().getLanguageA() + " to " + translator.getDict().getLanguageB());
                 infoText.setForeground(Color.WHITE);
                 infoBar.add(infoText);
 
+                // Add "Add translation" button to info bar
                 JButton addTranslationButton = new JButton("Add translation");
                 addTranslationButton.addActionListener(new ActionListener() {
                     @Override
@@ -492,20 +589,28 @@ public class Application {
                 });
                 infoBar.add(addTranslationButton);
 
+                // Add infoBar and scroll pane to respective viewports on editorPanel
                 editorPanel.add(infoBar,BorderLayout.NORTH);
                 editorPanel.add(scrollPane, BorderLayout.CENTER);
 
+                // Finalise frame setup and set visible
                 editorFrame.setContentPane(editorPanel);
                 editorFrame.setSize(500,400);
                 editorFrame.setMinimumSize(new Dimension(500,400));
                 editorFrame.setVisible(true);
             }
         };
+        // Start the thread
         t.start();
+
     }
 
+    /**
+     * Show prompt to add a translation to the dictionary
+     */
     public void addTranslationPrompt() {
 
+        // Create custom dialog pane and add components
         JPanel dialog = new JPanel();
         dialog.setLayout(new GridLayout(2,2));
         dialog.setPreferredSize(new Dimension(300,75));
@@ -520,8 +625,10 @@ public class Application {
         JTextField lang2Input = new JTextField();
         dialog.add(lang2Input);
 
+        // Show dialog modal with custom panel
         JOptionPane.showMessageDialog(editorFrame, dialog, "New translation...", JOptionPane.QUESTION_MESSAGE);
 
+        // Validate input
         if(lang1Input.getText().isBlank() || lang2Input.getText().isBlank()){
             JOptionPane.showMessageDialog(editorFrame, "Some of the fields were empty. No translation added.", "Error adding translation...", JOptionPane.WARNING_MESSAGE);
         }
@@ -531,11 +638,19 @@ public class Application {
 
     }
 
+    /**
+     * Creates a JPanel that shows each translation stored in a dictionary
+     * @return The JPanel displaying the dictionary contents
+     */
     public JPanel getDictPanel() {
+
+        // Initialise JPanel and set layout
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
+        // Iterate Dictionary for each item
         for (DictionaryItem i:translator.getDict()) {
+            // Create FlowLayout panel showing the original, translation and a button to remove the item from the dictionary
             JPanel translationPanel = new JPanel();
             translationPanel.setLayout(new FlowLayout(FlowLayout.LEADING,25,10));
             JLabel langA = new JLabel(i.getOriginal());
@@ -545,6 +660,7 @@ public class Application {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     translator.getDict().remove(i.getOriginal());
+                    // Remove the GUI component from the mainPanel
                     mainPanel.remove(translationPanel);
                     mainPanel.revalidate();
                 }
@@ -555,18 +671,27 @@ public class Application {
             mainPanel.add(translationPanel);
         }
 
+        // Return the completed panel
         return mainPanel;
+
     }
 
+    /**
+     * Prompts the user to select a .txt file to translate
+     */
     public void importTxtFile(){
+        // Create new thread to improve GUI performance
         Thread t = new Thread(){
             @Override
             public void run(){
+                // Create File Chooser and extension filter
                 JFileChooser fc = new JFileChooser();
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt files", "txt");
 
+                // Get file from user
                 int returnVal = fc.showOpenDialog(frame);
 
+                // Validate input, translate the text and show appropriate error modals if needed
                 if(returnVal == JFileChooser.APPROVE_OPTION){
                     File input = fc.getSelectedFile();
                     String ext = input.getName().substring(input.getName().lastIndexOf("."));
@@ -580,26 +705,36 @@ public class Application {
                         }
                     }
                     else{
-                        JOptionPane.showMessageDialog(frame, "You need to prove a .txt file.", "Error importing text...", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "You need to provide a .txt file.", "Error importing text...", JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
         };
+        // Start the thread
         t.start();
+
     }
 
+    /**
+     * Exports the translation into a user-specified .txt file
+     */
     public void exportTxtFile(){
+
+        // Check if there is a translation
         if(outputArea.getText().isBlank()){
             JOptionPane.showMessageDialog(frame, "There is nothing to be saved.", "Error exporting translation...",  JOptionPane.WARNING_MESSAGE);
         }
         else{
+            // Create new thread to improve GUI performance
             Thread t = new Thread(){
                 @Override
                 public void run(){
+                    // Create file chooser and get file from user
                     JFileChooser fc = new JFileChooser();
                     fc.setSelectedFile(new File("translation.txt"));
                     int returnVal = fc.showSaveDialog(frame);
 
+                    // Validate user input and write String to .txt file, show error modals as needed
                     if(returnVal == JFileChooser.APPROVE_OPTION){
                         File file = fc.getSelectedFile();
                         String ext = file.getName().substring(file.getName().lastIndexOf("."));
@@ -621,13 +756,20 @@ public class Application {
                     }
                 }
             };
+            // Start the thread
             t.start();
         }
+
     }
 
+    /**
+     * Open the user manual pdf file in the default PDF viewer
+     */
     public void openUserManual() {
+        // Show warning message
         int returnVal = JOptionPane.showConfirmDialog(frame, "This will open the PDF User Manual located in the same directory as the program's .jar executable file.", "Open User Manual", JOptionPane.OK_CANCEL_OPTION);
 
+        // Validate user input and attempt to open PDF
         if(returnVal == JOptionPane.OK_OPTION){
             try {
                 File userMan = new File("UserManual.pdf");
@@ -638,4 +780,5 @@ public class Application {
         }
 
     }
+
 }
